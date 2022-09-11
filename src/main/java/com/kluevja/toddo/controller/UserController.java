@@ -5,6 +5,7 @@ import com.kluevja.toddo.entity.Role;
 import com.kluevja.toddo.entity.User;
 import com.kluevja.toddo.entity.auth.JwtRequest;
 import com.kluevja.toddo.entity.auth.JwtResponse;
+import com.kluevja.toddo.entity.response.UserResponse;
 import com.kluevja.toddo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,7 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody JwtRequest user) {
+        System.out.println(user);
         Optional<User> userAttempt = userRepository.findByEmail(user.getEmail());
         if (userAttempt.isEmpty()) {
             return ResponseEntity
@@ -50,8 +52,8 @@ public class UserController {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
-
-        return ResponseEntity.ok(new JwtResponse(jwt));
+        System.out.println("generateJwtToken "+jwt);
+        return ResponseEntity.ok(new JwtResponse(jwt, userAttempt.get().getEmail(), userAttempt.get().getRole().getAuthority()));
     }
 
     @PostMapping("/register")
@@ -78,7 +80,7 @@ public class UserController {
 
     @GetMapping("/profile")
     public ResponseEntity<?> profile() {
-        System.out.println("request profile");
-        return ResponseEntity.ok().body("hello world");
+        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return ResponseEntity.ok().body(new UserResponse(user.getId(), user.getEmail(), user.getRole().getAuthority()));
     }
 }

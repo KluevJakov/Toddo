@@ -19,11 +19,9 @@ public class JwtTokenUtil {
     private int jwtExpirationMs;
 
     public String generateJwtToken(Authentication authentication) {
-
         User userPrincipal = (User) authentication.getPrincipal();
-
         return Jwts.builder()
-                .setSubject((userPrincipal.getEmail()))
+                .setSubject(userPrincipal.getEmail())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
@@ -49,7 +47,6 @@ public class JwtTokenUtil {
         } catch (IllegalArgumentException e) {
             System.out.printf("JWT claims string is empty: %s \n", e.getMessage());
         }
-
         return false;
     }
 }

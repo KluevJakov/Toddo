@@ -5,13 +5,14 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
-@Table(name = "tasks")
+@Table(name = "sheets")
 @Getter
 @Setter
 @ToString
-public class Task {
+public class Sheet {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
@@ -21,7 +22,6 @@ public class Task {
     private User creator;
     @ManyToOne
     private Group assigned;
-    @ManyToOne
-    private Stage stage;
-
+    @ManyToMany
+    private Set<Task> tasks;
 }

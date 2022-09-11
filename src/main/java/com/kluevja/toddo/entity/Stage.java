@@ -7,21 +7,13 @@ import lombok.ToString;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "tasks")
+@Table(name = "stages")
 @Getter
 @Setter
 @ToString
-public class Task {
+public class Stage {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
-    private String title;
-    private String description;
-    @ManyToOne
-    private User creator;
-    @ManyToOne
-    private Group assigned;
-    @ManyToOne
-    private Stage stage;
-
+    private String name;
 }
