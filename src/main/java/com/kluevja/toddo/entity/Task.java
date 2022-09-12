@@ -17,10 +17,11 @@ public class Task {
     private long id;
     private String title;
     private String description;
+    private int priority;
     @ManyToOne
     private User creator;
     @ManyToOne
-    private Group assigned;
+    private User performer;
     @ManyToOne
     private Stage stage;
 
