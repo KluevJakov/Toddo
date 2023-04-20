@@ -26,7 +26,7 @@ public class SheetService {
 
     public List<Sheet> getMyPersonalSheets (User user) {
         return sheetRepository.findAll().stream()
-                .filter(e -> !e.isGroup())
+                .filter(e -> !e.getIsGroup())
                 .filter(e -> e.getCreator().getId() == user.getId())
                 .collect(Collectors.toList());
     }

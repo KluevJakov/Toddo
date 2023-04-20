@@ -1,6 +1,7 @@
 package com.kluevja.toddo.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,43 +11,36 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 
 @Entity
 @Table(name = "users")
 @Getter
 @Setter
+@EqualsAndHashCode
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
 
     @NotBlank
     @Size(max = 50)
     @Email
     private String email;
 
-    @JsonIgnore
-    @NotBlank
-    @Size(max = 120)
     private String password;
 
-    @JsonIgnore
     @Transient
     private String passwordConfirm;
 
-    @Enumerated(EnumType.STRING)
-    private Role role;
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Set<Role> roles;
 
-    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return new ArrayList<Role>(Collections.singleton(role));
+        return roles;
     }
 
-    @JsonIgnore
     @Override
     public String getPassword() {
         return password;

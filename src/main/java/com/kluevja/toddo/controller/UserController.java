@@ -5,6 +5,7 @@ import com.kluevja.toddo.entity.Role;
 import com.kluevja.toddo.entity.User;
 import com.kluevja.toddo.entity.auth.JwtRequest;
 import com.kluevja.toddo.entity.auth.JwtResponse;
+import com.kluevja.toddo.repository.RoleRepository;
 import com.kluevja.toddo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
 import java.util.Optional;
 
 @RestController
@@ -22,16 +24,20 @@ import java.util.Optional;
 public class UserController {
 
     @Autowired
-    AuthenticationManager authenticationManager;
+    private AuthenticationManager authenticationManager;
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    PasswordEncoder encoder;
+    private PasswordEncoder encoder;
 
     @Autowired
-    JwtTokenUtil jwtUtils;
+    private JwtTokenUtil jwtUtils;
+
+    @Autowired
+    private RoleRepository roleRepository;
+
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody JwtRequest user) {
@@ -52,7 +58,7 @@ public class UserController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
         System.out.println("generateJwtToken "+jwt);
-        return ResponseEntity.ok(new JwtResponse(jwt, userAttempt.get().getEmail(), userAttempt.get().getRole().getAuthority(), userAttempt.get().getId()));
+        return ResponseEntity.ok(new JwtResponse(jwt, userAttempt.get().getEmail(), userAttempt.get().getAuthorities(), userAttempt.get().getId()));
     }
 
     @PostMapping("/register")
@@ -71,7 +77,10 @@ public class UserController {
         }
 
         user.setPassword(encoder.encode(user.getPassword()));
-        user.setRole(Role.USER);
+        if (user.getRoles() == null) {
+            user.setRoles(new HashSet<>());
+        }
+        user.getRoles().add(roleRepository.findById(1L).get());
         userRepository.save(user);
 
         return ResponseEntity.ok("User registered successfully!");

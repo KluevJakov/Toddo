@@ -14,10 +14,10 @@ import javax.persistence.*;
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
     private String title;
     private String description;
-    private int priority;
+    private Integer priority;
     @ManyToOne
     private User creator;
     @ManyToOne

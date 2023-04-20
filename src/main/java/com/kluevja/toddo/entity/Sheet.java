@@ -1,7 +1,9 @@
 package com.kluevja.toddo.entity;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -10,13 +12,15 @@ import java.util.Set;
 @Table(name = "sheets")
 @Getter
 @Setter
+@EqualsAndHashCode
+@ToString
 public class Sheet {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
     private String title;
     private String description;
-    private boolean isGroup;
+    private Boolean isGroup;
     @ManyToOne
     private User creator;
     @ManyToOne
@@ -25,18 +29,4 @@ public class Sheet {
     private Set<Task> tasks;
     @ManyToMany
     private Set<Stage> stages;
-
-    @Override
-    public String toString() {
-        return "Sheet{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", isGroup=" + isGroup +
-                ", creator=" + creator +
-                ", assigned=" + assigned +
-                ", tasks=" + tasks +
-                ", stages=" + stages +
-                '}';
-    }
 }
