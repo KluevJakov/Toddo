@@ -15,9 +15,8 @@ public class SheetService {
     @Autowired
     private SheetRepository sheetRepository;
 
-    //TODO: check it for correction
     public boolean validateSheet (Sheet sheet) {
-        return !sheet.getTitle().isEmpty() && !sheet.getDescription().isEmpty() && sheet.getCreator() != null;
+        return !sheet.getTitle().isEmpty() && !sheet.getDescription().isEmpty();
     }
 
     public void create (Sheet sheet) {
@@ -27,7 +26,6 @@ public class SheetService {
     public List<Sheet> getMyPersonalSheets (User user) {
         return sheetRepository.findAll().stream()
                 .filter(e -> !e.getIsGroup())
-                .filter(e -> e.getCreator().getId() == user.getId())
                 .collect(Collectors.toList());
     }
 
@@ -35,12 +33,7 @@ public class SheetService {
         Optional<Sheet> sheet = sheetRepository.findById(id);
 
         if (sheet.isPresent()) {
-            //TODO: add group membership check
-            if (sheet.get().getCreator().getId() == currentUser.getId()) {
-                return sheet.get();
-            } else {
-                throw new Exception("No access for this sheet");
-            }
+            return sheet.get();
         } else {
             throw new Exception("Sheet not found");
         }

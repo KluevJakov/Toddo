@@ -21,10 +21,6 @@ public class Sheet {
     private String title;
     private String description;
     private Boolean isGroup;
-    @ManyToOne
-    private User creator;
-    @ManyToOne
-    private Group assigned;
     @ManyToMany
     private Set<Task> tasks;
     @ManyToMany

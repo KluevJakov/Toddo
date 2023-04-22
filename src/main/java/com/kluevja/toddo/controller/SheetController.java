@@ -20,7 +20,6 @@ public class SheetController {
     public ResponseEntity<?> create(@RequestBody Sheet sheet) {
         if (sheetService.validateSheet(sheet)) {
             User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            sheet.setCreator(user);
             sheetService.create(sheet);
             return ResponseEntity.ok("{}");
         }

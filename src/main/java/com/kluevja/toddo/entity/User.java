@@ -8,9 +8,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 import java.util.*;
 
 @Entity
@@ -22,19 +19,22 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
-    @NotBlank
-    @Size(max = 50)
-    @Email
     private String email;
-
+    private String surname;
+    private String name;
+    private String patronymic;
+    private String address;
+    private String jobPosition;
+    @ManyToOne
+    private Department department;
+    private Date regDate;
     private String password;
-
     @Transient
     private String passwordConfirm;
-
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roles;
+
+    private Boolean active;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -73,7 +73,7 @@ public class User implements UserDetails {
     @JsonIgnore
     @Override
     public boolean isEnabled() {
-        return true;
+        return this.active;
     }
 
 }

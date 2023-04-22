@@ -1,17 +1,19 @@
 package com.kluevja.toddo.entity;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Set;
 
 @Entity
-@Table(name = "groups")
+@Table(name = "deps")
 @Getter
-public class Group {
+@Setter
+@EqualsAndHashCode
+public class Department {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @ManyToMany
-    private Set<User> members;
+    private String name;
 }

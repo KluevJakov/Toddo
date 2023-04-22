@@ -5,6 +5,7 @@ import com.kluevja.toddo.entity.Role;
 import com.kluevja.toddo.entity.User;
 import com.kluevja.toddo.entity.auth.JwtRequest;
 import com.kluevja.toddo.entity.auth.JwtResponse;
+import com.kluevja.toddo.repository.DepartmentRepository;
 import com.kluevja.toddo.repository.RoleRepository;
 import com.kluevja.toddo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,8 @@ public class UserController {
 
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private DepartmentRepository depsRepository;
 
 
     @PostMapping("/login")
@@ -77,10 +80,12 @@ public class UserController {
         }
 
         user.setPassword(encoder.encode(user.getPassword()));
+        user.setActive(true);
         if (user.getRoles() == null) {
             user.setRoles(new HashSet<>());
         }
         user.getRoles().add(roleRepository.findById(1L).get());
+        user.setDepartment(depsRepository.findById(8L).get());
         userRepository.save(user);
 
         return ResponseEntity.ok("User registered successfully!");
