@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Optional;
 
@@ -86,6 +87,7 @@ public class UserController {
         }
         user.getRoles().add(roleRepository.findById(1L).get());
         user.setDepartment(depsRepository.findById(8L).get());
+        user.setRegDate(new Date());
         userRepository.save(user);
 
         return ResponseEntity.ok("User registered successfully!");

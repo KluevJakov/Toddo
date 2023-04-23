@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/toddo
+    url: jdbc:postgresql://localhost:5432/viano
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
