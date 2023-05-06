@@ -17,7 +17,9 @@ import java.util.*;
 @EqualsAndHashCode
 public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "user_seq", sequenceName = "user_squence", initialValue = 9, allocationSize = 20)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
+    @Column(name = "id", nullable = false)
     private Long id;
     private String email;
     private String surname;
@@ -26,6 +28,7 @@ public class User implements UserDetails {
     private String address;
     private String jobPosition;
     @ManyToOne
+    @JoinColumn(name = "dep_id")
     private Department department;
     private Date regDate;
     private String password;
@@ -36,6 +39,7 @@ public class User implements UserDetails {
 
     private Boolean active;
 
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles;
@@ -76,4 +80,8 @@ public class User implements UserDetails {
         return this.active;
     }
 
+    @JsonIgnore
+    public String getFio() {
+        return surname + " " + name + " " + patronymic;
+    }
 }

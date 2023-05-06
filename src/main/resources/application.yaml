@@ -9,11 +9,13 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: false
   sql:
     init:
       mode: always
-hibernate:
-  show_sql: true
 
 jwt:
   secret: helloworld

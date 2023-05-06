@@ -8,6 +8,9 @@ import com.kluevja.toddo.entity.auth.JwtResponse;
 import com.kluevja.toddo.repository.DepartmentRepository;
 import com.kluevja.toddo.repository.RoleRepository;
 import com.kluevja.toddo.repository.UserRepository;
+import com.kluevja.toddo.service.UserService;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,86 +19,55 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Optional;
+import java.io.*;
+import java.util.*;
 
 @RestController
+@RequestMapping("/users")
 @CrossOrigin(origins = "http://localhost:4200")
 public class UserController {
 
     @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private PasswordEncoder encoder;
-
-    @Autowired
-    private JwtTokenUtil jwtUtils;
-
-    @Autowired
-    private RoleRepository roleRepository;
-    @Autowired
-    private DepartmentRepository depsRepository;
-
+    private UserService userService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody JwtRequest user) {
-        System.out.println(user);
-        Optional<User> userAttempt = userRepository.findByEmail(user.getEmail());
-        if (userAttempt.isEmpty()) {
-            return ResponseEntity
-                    .badRequest()
-                    .body("Error: User not found!");
-        } else if (!encoder.matches(user.getPassword(), userAttempt.get().getPassword())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body("Error: Incorrect password");
-        }
-
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
-        System.out.println("generateJwtToken "+jwt);
-        return ResponseEntity.ok(new JwtResponse(jwt, userAttempt.get().getEmail(), userAttempt.get().getAuthorities(), userAttempt.get().getId()));
+        return userService.login(user);
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user) {
+        return userService.createUser(user);
+    }
 
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            return ResponseEntity
-                    .badRequest()
-                    .body("Error: Email is already in use!");
+    @PostMapping("/updateUser")
+    public ResponseEntity<?> updateUser(@RequestBody User user) {
+        return userService.updateUser(user);
+    }
+
+    @PostMapping("/importUsers")
+    public ResponseEntity<?> importUsers(@RequestParam("file") MultipartFile file) throws IOException {
+        Reader targetReader = new InputStreamReader(file.getInputStream());
+        Iterable<CSVRecord> records = CSVFormat.EXCEL.parse(targetReader);
+        List<List<String>> userRecords = new ArrayList<>();
+        for (CSVRecord record : records) {
+            userRecords.add(new ArrayList<>(List.of(record.values())));
         }
-
-        if (!user.getPassword().equals(user.getPasswordConfirm())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body("Error: Passwords don't matches!");
-        }
-
-        user.setPassword(encoder.encode(user.getPassword()));
-        user.setActive(true);
-        if (user.getRoles() == null) {
-            user.setRoles(new HashSet<>());
-        }
-        user.getRoles().add(roleRepository.findById(1L).get());
-        user.setDepartment(depsRepository.findById(8L).get());
-        user.setRegDate(new Date());
-        userRepository.save(user);
-
-        return ResponseEntity.ok("User registered successfully!");
+        targetReader.close();
+        return userService.importUsers(userRecords);
     }
 
     @GetMapping("/profile")
     public ResponseEntity<?> profile() {
         User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return ResponseEntity.ok().body(user);
+    }
+
+    @GetMapping
+    public ResponseEntity<?> all(@RequestParam(required = false) Long depId) {
+        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return ResponseEntity.ok().body(userService.getAll(depId, user.getId()));
     }
 }
