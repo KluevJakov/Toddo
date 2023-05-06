@@ -3,21 +3,32 @@ package com.kluevja.toddo.controller;
 import com.kluevja.toddo.entity.Stage;
 import com.kluevja.toddo.entity.Task;
 import com.kluevja.toddo.repository.TaskRepository;
+import com.kluevja.toddo.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
-@RequestMapping("/task")
+@RequestMapping("/tasks")
 public class TaskController {
 
     @Autowired
-    private TaskRepository taskRepository;
+    private TaskService taskService;
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody Task task) {
-        return ResponseEntity.ok().body("task create ok");
+        return taskService.createEvent(task);
+    }
+
+    @GetMapping("/events")
+    public ResponseEntity<?> countNotify() {
+        return taskService.countNotify();
+    }
+
+    @GetMapping("/")
+    public ResponseEntity<?> tasks() {
+        return taskService.findAll();
     }
 
     @PostMapping("/delete")
