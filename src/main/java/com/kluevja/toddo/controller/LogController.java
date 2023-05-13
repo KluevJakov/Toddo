@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://0.0.0.0:4200")
 @RequestMapping("/logs")
 public class LogController {
     @Autowired

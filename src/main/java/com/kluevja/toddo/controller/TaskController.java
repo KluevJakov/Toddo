@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://0.0.0.0:4200")
 @RequestMapping("/tasks")
 public class TaskController {
 
