@@ -25,7 +25,7 @@ import java.io.*;
 import java.util.*;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 @CrossOrigin(origins = "http://0.0.0.0:4200")
 public class UserController {
 

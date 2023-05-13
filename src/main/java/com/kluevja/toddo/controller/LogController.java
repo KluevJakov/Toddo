@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "http://0.0.0.0:4200")
-@RequestMapping("/logs")
+@RequestMapping("/api/logs")
 public class LogController {
     @Autowired
     private LogService logService;
