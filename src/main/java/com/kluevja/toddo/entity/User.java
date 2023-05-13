@@ -25,6 +25,7 @@ public class User implements UserDetails {
     private String surname;
     private String name;
     private String patronymic;
+    private String phone;
     private String address;
     private String jobPosition;
     @ManyToOne

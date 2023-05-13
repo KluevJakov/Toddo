@@ -1,7 +1,7 @@
 package com.kluevja.toddo.config;
 
 public class VianoConstants {
-    public static Integer USER_RECORD_REQUIRED_FIELDS_COUNT = 6;
+    public static Integer USER_RECORD_REQUIRED_FIELDS_COUNT = 7;
 
     public static Long ROLE_USER_ID = 1L;
 

@@ -38,6 +38,8 @@ public class UserService {
     private RoleRepository roleRepository;
     @Autowired
     private DepartmentRepository depsRepository;
+    @Autowired
+    private LogService logService;
 
     public ResponseEntity<?> login(JwtRequest user) {
         Optional<User> userAttempt = userRepository.findByEmail(user.getEmail());
@@ -55,8 +57,8 @@ public class UserService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
-        System.out.println("generateJwtToken "+jwt);
-        return ResponseEntity.ok(new JwtResponse(jwt, userAttempt.get().getEmail(), userAttempt.get().getAuthorities(), userAttempt.get().getId()));
+        logService.log("Пользователь " + user.getEmail() + " вошел в систему");
+        return ResponseEntity.ok(new JwtResponse(jwt, userAttempt.get().getEmail(), userAttempt.get().getDepartment(), userAttempt.get().getAuthorities(), userAttempt.get().getId()));
     }
 
     public ResponseEntity<?> createUser(User user) {
@@ -77,6 +79,7 @@ public class UserService {
         user.setDepartment(depsRepository.findById(VianoConstants.DEPARTMENT_ORGANIZATION_ID).get());
         user.setRegDate(new Date());
         userRepository.save(user);
+        logService.log("Создан аккаунт: " + user.getEmail());
         return ResponseEntity.ok(new MessageDto("Аккаунт для пользователя '" + user.getFio() + "' создан!\nПароль направлен на указанный email."));
     }
 
@@ -84,21 +87,28 @@ public class UserService {
         if (user.getDepartment().getId().equals(VianoConstants.DEPARTMENT_HEAD_ID) &&
                 isAdminDepartmentAssigned(VianoConstants.DEPARTMENT_HEAD_ID).isPresent()) {
             User actualAdmin = isAdminDepartmentAssigned(VianoConstants.DEPARTMENT_HEAD_ID).get();
-            return ResponseEntity.badRequest().body("Невозможно назначить руководителя 'Руководитель организации', " +
-                    "сначала измените должность пользователя '" + actualAdmin.getFio()+"'");
+            if (!user.getId().equals(actualAdmin.getId())) {
+                return ResponseEntity.badRequest().body("Невозможно назначить руководителя 'Руководитель организации', " +
+                        "сначала измените должность пользователя '" + actualAdmin.getFio() + "'");
+            }
         } else if (user.getDepartment().getId().equals(VianoConstants.DEPARTMENT_ADM_ID) &&
                 isAdminDepartmentAssigned(VianoConstants.DEPARTMENT_ADM_ID).isPresent()) {
             User actualAdmin = isAdminDepartmentAssigned(VianoConstants.DEPARTMENT_ADM_ID).get();
-            return ResponseEntity.badRequest().body("Невозможно назначить руководителя 'Администратора ИБ', " +
-                    "сначала измените должность пользователя '" + actualAdmin.getFio()+"'");
+            if (!user.getId().equals(actualAdmin.getId())) {
+                return ResponseEntity.badRequest().body("Невозможно назначить руководителя 'Администратора ИБ', " +
+                        "сначала измените должность пользователя '" + actualAdmin.getFio() + "'");
+            }
         } else if (user.getDepartment().getId().equals(VianoConstants.DEPARTMENT_MNGR_ID) &&
                 isAdminDepartmentAssigned(VianoConstants.DEPARTMENT_MNGR_ID).isPresent()) {
             User actualAdmin = isAdminDepartmentAssigned(VianoConstants.DEPARTMENT_MNGR_ID).get();
-            return ResponseEntity.badRequest().body("Невозможно назначить руководителя 'Менеджера ИБ', " +
-                    "сначала измените должность пользователя '" + actualAdmin.getFio()+"'");
+            if (!user.getId().equals(actualAdmin.getId())) {
+                return ResponseEntity.badRequest().body("Невозможно назначить руководителя 'Менеджера ИБ', " +
+                        "сначала измените должность пользователя '" + actualAdmin.getFio() + "'");
+            }
         }
         //отправка изменений на почту пользователю
         userRepository.save(user);
+        logService.log("Аккаунт пользователя " + user.getEmail() + " обновлен");
         return ResponseEntity.ok(new MessageDto("Аккаунт для пользователя '" + user.getFio() + "' обновлён!\nИзменения направлены на указанный email."));
     }
 
@@ -121,6 +131,7 @@ public class UserService {
             userFromRecord.setPatronymic(userRecord.get(3).trim());
             userFromRecord.setAddress(userRecord.get(4).trim());
             userFromRecord.setJobPosition(userRecord.get(5).trim());
+            userFromRecord.setPhone(userRecord.get(6).trim());
             ResponseEntity<?> result = createUser(userFromRecord);
 
             if (result.getStatusCode().is2xxSuccessful()) {

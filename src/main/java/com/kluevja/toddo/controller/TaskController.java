@@ -2,11 +2,16 @@ package com.kluevja.toddo.controller;
 
 import com.kluevja.toddo.entity.Stage;
 import com.kluevja.toddo.entity.Task;
+import com.kluevja.toddo.entity.dto.StatDto;
 import com.kluevja.toddo.repository.TaskRepository;
 import com.kluevja.toddo.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
@@ -21,14 +26,53 @@ public class TaskController {
         return taskService.createEvent(task);
     }
 
-    @GetMapping("/events")
+    @PostMapping("/process")
+    public ResponseEntity<?> process(@RequestBody Task task) {
+        return taskService.processIncident(task);
+    }
+
+    @GetMapping("/notifyCount")
     public ResponseEntity<?> countNotify() {
         return taskService.countNotify();
     }
 
-    @GetMapping("/")
-    public ResponseEntity<?> tasks() {
-        return taskService.findAll();
+    @GetMapping("/archive")
+    public ResponseEntity<?> archive() {
+        return taskService.findArchive();
+    }
+
+    @GetMapping("/stats")
+    public ResponseEntity<?> stats() {
+        ArrayList<StatDto> stats = new ArrayList<>();
+        HashMap<String, Integer> statMap = new HashMap<>();
+        taskService.findAll().forEach(e -> {
+            statMap.merge(e.getEventWhat(), 1, Integer::sum);
+        });
+
+        statMap.forEach((key, value) -> {
+            stats.add(new StatDto(key, value.toString()));
+        });
+        return ResponseEntity.ok().body(stats);
+    }
+
+    @GetMapping("/events")
+    public ResponseEntity<?> tasksEvents() {
+        return taskService.findEvents();
+    }
+
+    @GetMapping("/stageI")
+    public ResponseEntity<?> tasksStageI() {
+        return taskService.findStageI();
+    }
+
+    @GetMapping("/stageII")
+    public ResponseEntity<?> tasksStageII() {
+        return taskService.findStageII();
+    }
+
+    @GetMapping("/stageIII")
+    public ResponseEntity<?> tasksStageIII() {
+        return taskService.findStageIII();
     }
 
     @PostMapping("/delete")

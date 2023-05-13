@@ -1,5 +1,6 @@
 package com.kluevja.toddo.entity.auth;
 
+import com.kluevja.toddo.entity.Department;
 import com.kluevja.toddo.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,6 +16,7 @@ import java.util.Set;
 public class JwtResponse {
     private String token;
     private String email;
+    private Department department;
     private Collection<? extends GrantedAuthority> role;
     private long id;
 }

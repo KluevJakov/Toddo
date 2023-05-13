@@ -17,4 +17,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query(nativeQuery = true, value = "SELECT * FROM users WHERE dep_id = ?1")
     Optional<User> adminDepartmentAssigned(Long depId);
+
+    @Query(nativeQuery = true, value = "SELECT * FROM users WHERE dep_id = ?1 LIMIT 1")
+    User findEmployerWithDep(Long depId);
 }
