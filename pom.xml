@@ -11,6 +11,7 @@
 	<groupId>com.kluevja</groupId>
 	<artifactId>viano</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
 	<name>Toddo</name>
 	<description>Advanced To-Do planner with notifications for efficient time management</description>
 	<properties>
