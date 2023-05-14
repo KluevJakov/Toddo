@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = "http://0.0.0.0:4200")
 @RequestMapping("/api/stage")
 public class StageController {
 
